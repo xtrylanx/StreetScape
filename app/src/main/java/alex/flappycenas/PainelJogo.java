@@ -41,7 +41,7 @@ public class PainelJogo extends SurfaceView implements SurfaceHolder.Callback {
     private long tempoInicio;
     private long tempoFinal;
     private long intervalo;
-    int altura, largura;
+    private int altura, largura;
     private Bitmap img[] = new Bitmap[4];
     private Bitmap amigo[] = new Bitmap[1];
     private Random r;
@@ -65,20 +65,21 @@ public class PainelJogo extends SurfaceView implements SurfaceHolder.Callback {
         this.largura = size.x;
         this.altura = size.y;
         limiteX = largura;
+        Log.d("size", "largura: " + String.valueOf(size.x) + "altura: " + String.valueOf(size.y)+ "limitex: " + String.valueOf(limiteX));
         pontuacao = 0;
         handler = new Handler();
 
         Bitmap bg = Bitmap.createScaledBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.estrada), largura, altura, false);
         fundo = new Fundo(bg);
-        bg = Bitmap.createScaledBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.car), largura / 5, 2 * (altura / 8), false);
-        jogador = new Jogador(bg, altura / 8, largura / 4, limiteX, largura);
+        bg = Bitmap.createScaledBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.car), largura / 5, altura / 4, false);
+        jogador = new Jogador(bg, altura / 8, largura / 4, limiteX);
 
         inimigos = new ArrayList<Inimigo>();
         amigos = new ArrayList<Amigo>();
 
 
         tempoInicio = System.currentTimeMillis();
-        intervalo = 1500;
+        intervalo = 1000;
         img[0] = Bitmap.createScaledBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.cone), largura / 5, (altura / 8), false);
         img[1] = Bitmap.createScaledBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.caixa), largura / 5, (altura / 8), false);
         img[2] = Bitmap.createScaledBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.lixo), largura / 5, (altura / 8), false);
@@ -131,13 +132,12 @@ public class PainelJogo extends SurfaceView implements SurfaceHolder.Callback {
 
     public void update() {
         tempoFinal = System.currentTimeMillis() - tempoInicio;
-
+        Log.d("speed", String.valueOf(intervalo));
         if (tempoFinal > intervalo) {
             Bitmap bg;
 
 
             if (pontuacao!= 0 && pontuacao%10 == 0) {
-                intervalo = 400;
                 pontuacao++;
                 bg = amigo[0];
                 criarAmigo(bg);
@@ -154,6 +154,10 @@ public class PainelJogo extends SurfaceView implements SurfaceHolder.Callback {
             if (!i.getMorto()) {
                 if (i.isFora(altura)) {
                     i.setMorto();
+                    if(intervalo > 400){
+                        intervalo-=10;
+                    }
+
                     pontuacao++;
                 }
                 i.update();
@@ -163,9 +167,6 @@ public class PainelJogo extends SurfaceView implements SurfaceHolder.Callback {
                 ((MainActivity) getContext()).setResult(MenuActivity.PERDER_JOGO, new Intent().putExtra("pontuacao", pontuacao));
                ((MainActivity) getContext()).finish();
             } else {
-                Log.d("test", "inimigo" + i.getRect().toString());
-                Log.d("test", "jogador" + jogador.getRect().toString());
-                Log.d("stopThread", "nchama");
             }
         }
         jogador.update();
