@@ -99,12 +99,15 @@ public class PainelJogo extends SurfaceView implements SurfaceHolder.Callback {
 
     }
 
+
     @Override
     public void surfaceDestroyed(SurfaceHolder surfaceHolder) {
         boolean retry = true;
         while (retry) {
             try {
                 threadPrincipal.setActivo(false);
+                ((MainActivity) getContext()).setResult(MenuActivity.PERDER_JOGO, new Intent().putExtra("pontuacao", pontuacao));
+                ((MainActivity) getContext()).finish();
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -155,9 +158,9 @@ public class PainelJogo extends SurfaceView implements SurfaceHolder.Callback {
                 i.update();
             }
             if (colisao(i, jogador)) {
-                /*threadPrincipal.setActivo(false);
+                threadPrincipal.setActivo(false);
                 ((MainActivity) getContext()).setResult(MenuActivity.PERDER_JOGO, new Intent().putExtra("pontuacao", pontuacao));
-                ((MainActivity) getContext()).finish();*/
+                ((MainActivity) getContext()).finish();
             } else {
                 Log.d("test", "inimigo" + i.getRect().toString());
                 Log.d("test", "jogador" + jogador.getRect().toString());
