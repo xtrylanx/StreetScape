@@ -50,7 +50,7 @@ public class MenuActivity extends AppCompatActivity {
         if (requestCode == PERDER_JOGO) {
             pontuacao = data.getIntExtra("pontuacao", -1);
             if (pontuacao != -1) {
-                Toast.makeText(this, "A sua pontuacao foi gadada: " + String.valueOf(pontuacao), Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, "A sua pontuacao foi: " + String.valueOf(pontuacao), Toast.LENGTH_SHORT).show();
             }
         }
     }
