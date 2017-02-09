@@ -36,7 +36,8 @@ public class Jogador {
     public void draw(Canvas canvas){
         if(firstTime){
             // Para saltar de faixa em faixa
-            this.xSpeed = largura/2;
+            this.xSpeed = largura / 2;
+
             this.y =9 * (canvas.getWidth()/10);
             this.x = canvas.getHeight()/2;
             firstTime = false;

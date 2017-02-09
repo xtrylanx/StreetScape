@@ -33,15 +33,21 @@ public class PainelJogo extends SurfaceView implements SurfaceHolder.Callback {
     private ThreadPrincipal threadPrincipal;
     private Fundo fundo;
     private Jogador jogador;
+
     private ArrayList<Inimigo> inimigos;
+    private ArrayList<Amigo> amigos;
     private long tempoInicio;
     private long tempoFinal;
     private long intervalo;
     int altura,largura;
-    private Bitmap img[] =  new Bitmap[3];
+    private Bitmap img[] =  new Bitmap[4];
+    private Bitmap amigo[] =  new Bitmap[1];
     private Random r;
     private Paint paint = new Paint();
     private int pontuacao;
+    private Boolean nota = false;
+    private Boolean colision = false;
+
 
     public PainelJogo(Context context) {
         super(context);
@@ -64,7 +70,9 @@ public class PainelJogo extends SurfaceView implements SurfaceHolder.Callback {
         fundo = new Fundo(bg);
         bg = Bitmap.createScaledBitmap(BitmapFactory.decodeResource(getResources(),R.drawable.car),largura/5,2*(altura/8),false);
         jogador = new Jogador(bg,altura/8,largura/4, limiteX);
+
         inimigos = new ArrayList<Inimigo>();
+        amigos = new ArrayList<Amigo>();
 
 
         tempoInicio = System.currentTimeMillis();
@@ -72,7 +80,8 @@ public class PainelJogo extends SurfaceView implements SurfaceHolder.Callback {
         img[0] = Bitmap.createScaledBitmap(BitmapFactory.decodeResource(getResources(),R.drawable.cone),largura/5,(altura/8),false);
         img[1] = Bitmap.createScaledBitmap(BitmapFactory.decodeResource(getResources(),R.drawable.caixa),largura/5,(altura/8),false);
         img[2] = Bitmap.createScaledBitmap(BitmapFactory.decodeResource(getResources(),R.drawable.lixo),largura/5,(altura/8),false);
-
+        img[3] = Bitmap.createScaledBitmap(BitmapFactory.decodeResource(getResources(),R.drawable.oil),largura/5,(altura/8),false);
+        amigo[0] = Bitmap.createScaledBitmap(BitmapFactory.decodeResource(getResources(),R.drawable.nota),largura/5,(altura/8),false);
         r = new Random();
         // para que seja este ecra o que esta activo
         setFocusable(true);
@@ -117,40 +126,85 @@ public class PainelJogo extends SurfaceView implements SurfaceHolder.Callback {
 
     public void update() {
         tempoFinal = System.currentTimeMillis() - tempoInicio;
-        if(tempoFinal > intervalo ) {
+        if (tempoFinal > intervalo) {
             Bitmap bg;
-            bg = img[r.nextInt(3)];
+            bg = img[r.nextInt(4)];
             criarInimigo(bg);
             tempoInicio = System.currentTimeMillis();
         }
         fundo.update();
-        for(Inimigo i : inimigos){
-          if(!i.getMorto()) {
-              if(i.isFora(altura)){
-                  i.setMorto();
-                  pontuacao++;
-              }
-              i.update();
-          }
+        for (Inimigo i : inimigos) {
+            if (!i.getMorto()) {
+                if (i.isFora(altura)) {
+                    i.setMorto();
+                        pontuacao++;
+                    }
+                    i.update();
+                }
+                if (colisao(i, jogador)) {
+                    threadPrincipal.setActivo(false);
+                    ((MainActivity) getContext()).setResult(MenuActivity.PERDER_JOGO, new Intent().putExtra("pontuacao", pontuacao));
+                    ((MainActivity) getContext()).finish();
+                } else {
+                    Log.d("test", "inimigo" + i.getRect().toString());
+                    Log.d("test", "jogador" + jogador.getRect().toString());
+                    Log.d("stopThread", "nchama");
+                }
+            }
+            jogador.update();
+//Nivel
+            if (pontuacao == 3 && nota.equals(false)) {
+                nota = true;
+                intervalo = 750;
+                Bitmap bg;
+                bg = amigo[0];
+                criarAmigo(bg);
+            }
+            if (pontuacao == 15 && nota.equals(true)) {
+                nota = false;
+                intervalo = 600;
+                Bitmap bg;
+                bg = amigo[0];
+                criarAmigo(bg);
+                intervalo = 600;
+            }
+        if (pontuacao == 25 && nota.equals(false)) {
+            nota = true;
+            intervalo = 500;
+            Bitmap bg;
+            bg = amigo[0];
+            criarAmigo(bg);
+        }
 
 
-            if(colisao(i, jogador)) {
-                threadPrincipal.setActivo(false);
-                ((MainActivity) getContext()).setResult(MenuActivity.PERDER_JOGO, new Intent().putExtra("pontuacao", pontuacao));
-                ((MainActivity) getContext()).finish();
-            } else {
-                Log.d("test", "inimigo" + i.getRect().toString());
-                Log.d("test", "jogador" + jogador.getRect().toString());
-                Log.d("stopThread", "nchama");
+        for (Amigo a : amigos) {
+            if (!a.getMorto()) {
+                if (a.isFora(altura)) {
+                    a.setMorto();
+                    colision = false;
+                }
+                a.update();
+            }
+            if (colisaoA(a, jogador)) {
+                if(colision.equals(false)){
+                    colision=true;
+                    pontuacao+=5;
+                }
+
             }
         }
-         jogador.update();
 
-        if(pontuacao > 3){
-            intervalo= 750;
+
+
+
         }
+
+    private void criarAmigo(Bitmap bg) {
+        int x = limiteX / 4 * (r.nextInt(4));
+        amigos.add(new Amigo(x,bg,largura/5,(altura/8)));
     }
 
+    //Colisao dos objectos
     private boolean colisao(Inimigo i, Jogador j) {
 
         if (Rect.intersects(i.getRect(), j.getRect())) {
@@ -160,6 +214,18 @@ public class PainelJogo extends SurfaceView implements SurfaceHolder.Callback {
         }
     }
 
+    //Colisao dos objectos
+    private boolean colisaoA(Amigo i, Jogador j) {
+
+        if (Rect.intersects(i.getRect(), j.getRect())) {
+            return true;
+        } else{
+            return false;
+        }
+    }
+
+
+
 
     @Override
     public void draw(Canvas canvas) {
@@ -168,12 +234,17 @@ public class PainelJogo extends SurfaceView implements SurfaceHolder.Callback {
             for(Inimigo i : inimigos){
                 i.draw(canvas);
             }
+            for(Amigo a : amigos){
+                a.draw(canvas);
+            }
             jogador.draw(canvas);
 
 
             paint.setColor(Color.WHITE);
-            paint.setTextSize(30);
-            canvas.drawText("PONTUAÇÃO: " + pontuacao, 20, 25, paint);
+            paint.setTextSize(100);
+            paint.setTextAlign(Paint.Align.CENTER);
+            paint.setFakeBoldText(true);
+            canvas.drawText("" + pontuacao, canvas.getWidth()/2, canvas.getHeight()/2, paint);
         }
     }
 
