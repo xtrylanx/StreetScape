@@ -12,6 +12,7 @@ import android.view.Menu;
 import android.view.View;
 import android.widget.Toast;
 
+import java.io.BufferedReader;
 import com.google.android.gms.ads.AdListener;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.InterstitialAd;
@@ -19,14 +20,19 @@ import com.google.android.gms.ads.InterstitialAd;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Comparator;
 
 public class MenuActivity extends AppCompatActivity {
     public final static int PERDER_JOGO = 1;
-    public final static String FILENAME_SCORES = "scores.txt";
+    public final static String FILENAME_SCORES_PATH = "/scores.txt";
     private int pontuacao;
+    public static Integer[] scores;
 
     private InterstitialAd interstitial;
 
@@ -49,7 +55,7 @@ public class MenuActivity extends AppCompatActivity {
         });
         ActionBar ab = getSupportActionBar();
         ab.hide();
-        reiniciaPontuacao();
+        inicializarArrayScores();
     }
 
 
@@ -57,7 +63,6 @@ public class MenuActivity extends AppCompatActivity {
     public void play(View view) {
         Intent intent = new Intent(this, MainActivity.class);
         startActivityForResult(intent, PERDER_JOGO);
-
     }
 
 
@@ -67,16 +72,16 @@ public class MenuActivity extends AppCompatActivity {
 
     public void showRecords(View view) {
         Intent intent = new Intent(this, RecordsActivity.class);
-        intent.putExtra("pontuacao", String.valueOf(pontuacao));
         startActivity(intent);
-
-
     }
 
+    public Integer[] getScores() {
+        return scores;
+    }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (requestCode == PERDER_JOGO) {
+        if (requestCode == PERDER_JOGO && resultCode == RESULT_OK) {
             interstitial= new InterstitialAd(getApplicationContext());
             interstitial.setAdUnitId(getString(R.string.admob_interstetial_ad));
             AdRequest adRequest = new AdRequest.Builder().build();
@@ -89,12 +94,81 @@ public class MenuActivity extends AppCompatActivity {
                 }
             });
             pontuacao = data.getIntExtra("pontuacao", -1);
+            adicionaAListaScore(pontuacao);
+            guardaScores();
+        } else {
+
         }
     }
 
-    public void reiniciaPontuacao() {
+    private void adicionaAListaScore(int pontuacao) {
+        if (scores[2] < pontuacao) {
+            scores[2] = pontuacao;
+        }
+        Arrays.sort(scores, new Comparator<Integer>() {
+            @Override
+            public int compare(Integer x, Integer y) {
+                return y - x;
+            }
+        });
+
+    }
+
+    private void reiniciaPontuacao() {
         pontuacao = 0;
     }
 
+    private void inicializarArrayScores() {
+        scores = new Integer[3];
+        scores[0] = 0;
+        scores[1] = 0;
+        scores[2] = 0;
 
+        pontuacao = 0;
+        leScores();
+    }
+
+    private void guardaScores() {
+
+        try {
+            File outputFile = new File(getFilesDir() + FILENAME_SCORES_PATH);
+            OutputStream outStream = new FileOutputStream(outputFile);
+            OutputStreamWriter osWriter = new OutputStreamWriter(outStream);
+            for (Integer i : scores) {
+                osWriter.write(String.valueOf(i));
+                osWriter.write("\n");
+
+            }
+            osWriter.close();
+
+        } catch (IOException OE) {
+            OE.getStackTrace();
+
+        }
+
+    }
+
+    private void leScores() {
+        int j = 0;
+        File file = new File(getFilesDir() + FILENAME_SCORES_PATH);
+        if (file.exists()) {
+            BufferedReader rd;
+            try {
+                rd = new BufferedReader(new FileReader(getFilesDir() + FILENAME_SCORES_PATH));
+                String line = null;
+                while ((line = rd.readLine()) != null) {
+                    scores[j] = Integer.parseInt(line);
+                    if (j > 3) {
+                        break;
+                    }
+                    j++;
+                }
+                rd.close();
+            } catch (final IOException e) {
+                System.out.println("Error reading file");
+                throw new RuntimeException("Error reading file : " + e.getMessage(), e);
+            }
+
+        }
+    }
 }
