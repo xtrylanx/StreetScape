@@ -160,14 +160,14 @@ public class PainelJogo extends SurfaceView implements SurfaceHolder.Callback {
             }
             jogador.update();
 //Nivel
-            if (pontuacao == 3 && nota.equals(false)) {
+            if (pontuacao == 20 && nota.equals(false)) {
                 nota = true;
                 intervalo = 750;
                 Bitmap bg;
                 bg = amigo[0];
                 criarAmigo(bg);
             }
-            if (pontuacao == 15 && nota.equals(true)) {
+            if (pontuacao == 40 && nota.equals(true)) {
                 nota = false;
                 intervalo = 600;
                 Bitmap bg;
@@ -175,9 +175,23 @@ public class PainelJogo extends SurfaceView implements SurfaceHolder.Callback {
                 criarAmigo(bg);
                 intervalo = 600;
             }
-        if (pontuacao == 25 && nota.equals(false)) {
+        if (pontuacao == 60 && nota.equals(false)) {
             nota = true;
             intervalo = 500;
+            Bitmap bg;
+            bg = amigo[0];
+            criarAmigo(bg);
+        }
+        if (pontuacao == 80 && nota.equals(false)) {
+            nota = true;
+            intervalo = 400;
+            Bitmap bg;
+            bg = amigo[0];
+            criarAmigo(bg);
+        }
+        if (pontuacao == 100 && nota.equals(false)) {
+            nota = true;
+            intervalo = 300;
             Bitmap bg;
             bg = amigo[0];
             criarAmigo(bg);
