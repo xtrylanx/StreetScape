@@ -48,6 +48,7 @@ public class PainelJogo extends SurfaceView implements SurfaceHolder.Callback {
     private Paint paint = new Paint();
     private int pontuacao;
     private Boolean colision = false;
+    private Boolean PontuacaoN = false;
     private Handler handler;
 
 
@@ -136,7 +137,7 @@ public class PainelJogo extends SurfaceView implements SurfaceHolder.Callback {
 
 
             if (pontuacao!= 0 && pontuacao%10 == 0) {
-                intervalo = 750;
+                intervalo = 400;
                 pontuacao++;
                 bg = amigo[0];
                 criarAmigo(bg);
@@ -160,7 +161,7 @@ public class PainelJogo extends SurfaceView implements SurfaceHolder.Callback {
             if (colisao(i, jogador)) {
                 threadPrincipal.setActivo(false);
                 ((MainActivity) getContext()).setResult(MenuActivity.PERDER_JOGO, new Intent().putExtra("pontuacao", pontuacao));
-                ((MainActivity) getContext()).finish();
+               ((MainActivity) getContext()).finish();
             } else {
                 Log.d("test", "inimigo" + i.getRect().toString());
                 Log.d("test", "jogador" + jogador.getRect().toString());
@@ -183,6 +184,7 @@ public class PainelJogo extends SurfaceView implements SurfaceHolder.Callback {
                 if (colision.equals(false)) {
                     colision = true;
                     pontuacao += 5;
+                    PontuacaoN = true;
                 }
 
             }
@@ -196,13 +198,7 @@ public class PainelJogo extends SurfaceView implements SurfaceHolder.Callback {
         amigos.add(new Amigo(x, bg, largura / 5, (altura / 8)));
     }
 
-    private void mostraPontosNota() {
-        handler.post(new Runnable(){
-            public void run(){
-                Toast.makeText(((MainActivity) getContext()), "Ganhou 5 pontos!", Toast.LENGTH_SHORT).show();
-            }
-        });
-    }
+
 
     //Colisao dos objectos
     private boolean colisao(Inimigo i, Jogador j) {
@@ -227,7 +223,6 @@ public class PainelJogo extends SurfaceView implements SurfaceHolder.Callback {
     private boolean colisaoA(Amigo i, Jogador j) {
 
         if (Rect.intersects(i.getRect(), j.getRect())) {
-            mostraPontosNota();
             return true;
         } else {
             return false;
@@ -247,12 +242,12 @@ public class PainelJogo extends SurfaceView implements SurfaceHolder.Callback {
             }
             jogador.draw(canvas);
 
+                paint.setColor(Color.WHITE);
+                paint.setTextSize(100);
+                paint.setTextAlign(Paint.Align.CENTER);
+                paint.setFakeBoldText(true);
+                canvas.drawText("" + pontuacao, canvas.getWidth() / 2, canvas.getHeight() / 2, paint);
 
-            paint.setColor(Color.WHITE);
-            paint.setTextSize(100);
-            paint.setTextAlign(Paint.Align.CENTER);
-            paint.setFakeBoldText(true);
-            canvas.drawText("" + pontuacao, canvas.getWidth() / 2, canvas.getHeight() / 2, paint);
         }
     }
 
