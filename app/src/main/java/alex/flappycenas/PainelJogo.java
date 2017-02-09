@@ -10,6 +10,7 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Point;
 import android.graphics.Rect;
+import android.os.Handler;
 import android.util.Log;
 import android.view.Display;
 import android.view.MotionEvent;
@@ -47,6 +48,7 @@ public class PainelJogo extends SurfaceView implements SurfaceHolder.Callback {
     private Paint paint = new Paint();
     private int pontuacao;
     private Boolean colision = false;
+    private Handler handler;
 
 
     public PainelJogo(Context context) {
@@ -63,7 +65,7 @@ public class PainelJogo extends SurfaceView implements SurfaceHolder.Callback {
         this.altura = size.y;
         limiteX = largura;
         pontuacao = 0;
-
+        handler = new Handler();
 
         Bitmap bg = Bitmap.createScaledBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.estrada), largura, altura, false);
         fundo = new Fundo(bg);
@@ -191,6 +193,13 @@ public class PainelJogo extends SurfaceView implements SurfaceHolder.Callback {
         amigos.add(new Amigo(x, bg, largura / 5, (altura / 8)));
     }
 
+    private void mostraPontosNota() {
+        handler.post(new Runnable(){
+            public void run(){
+                Toast.makeText(((MainActivity) getContext()), "Ganhou 5 pontos!", Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
 
     //Colisao dos objectos
     private boolean colisao(Inimigo i, Jogador j) {
@@ -215,6 +224,7 @@ public class PainelJogo extends SurfaceView implements SurfaceHolder.Callback {
     private boolean colisaoA(Amigo i, Jogador j) {
 
         if (Rect.intersects(i.getRect(), j.getRect())) {
+            mostraPontosNota();
             return true;
         } else {
             return false;
