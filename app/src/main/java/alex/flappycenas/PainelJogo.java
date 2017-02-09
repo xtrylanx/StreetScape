@@ -69,7 +69,7 @@ public class PainelJogo extends SurfaceView implements SurfaceHolder.Callback {
         Bitmap bg = Bitmap.createScaledBitmap(BitmapFactory.decodeResource(getResources(),R.drawable.estrada),largura,altura,false);
         fundo = new Fundo(bg);
         bg = Bitmap.createScaledBitmap(BitmapFactory.decodeResource(getResources(),R.drawable.car),largura/5,2*(altura/8),false);
-        jogador = new Jogador(bg,altura/8,largura/4, limiteX);
+        jogador = new Jogador(bg,altura/8,largura/4, limiteX, largura);
 
         inimigos = new ArrayList<Inimigo>();
         amigos = new ArrayList<Amigo>();

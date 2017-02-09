@@ -19,14 +19,16 @@ public class Jogador {
     private int altura,largura;
     private float offsetX;
     private int limite;
+    private int largura1;
     private Paint paint = new Paint();
 
-    public Jogador(Bitmap imagem, int altura, int largura,int limite) {
+    public Jogador(Bitmap imagem, int altura, int largura,int limite, int largura1) {
         this.imagem = imagem;
         this.altura = altura;
         this.largura = largura;
         this.offsetX = (float)largura / 2;
         this.limite = limite;
+        this.largura1 = largura1;
 
 
     }
@@ -36,7 +38,7 @@ public class Jogador {
     public void draw(Canvas canvas){
         if(firstTime){
             // Para saltar de faixa em faixa
-            this.xSpeed = largura / 2;
+            this.xSpeed = largura1 / 5;
 
             this.y =9 * (canvas.getWidth()/10);
             this.x = canvas.getHeight()/2;

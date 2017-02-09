@@ -12,6 +12,10 @@ import android.view.Menu;
 import android.view.View;
 import android.widget.Toast;
 
+import com.google.android.gms.ads.AdListener;
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.InterstitialAd;
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -24,20 +28,36 @@ public class MenuActivity extends AppCompatActivity {
     public final static String FILENAME_SCORES = "scores.txt";
     private int pontuacao;
 
+    private InterstitialAd interstitial;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        interstitial = new InterstitialAd(MenuActivity.this);
         setContentView(R.layout.activity_menu);
+        interstitial= new InterstitialAd(getApplicationContext());
+        interstitial.setAdUnitId(getString(R.string.admob_interstetial_ad));
+        AdRequest adRequest = new AdRequest.Builder().build();
+        interstitial.loadAd(adRequest);
+        interstitial.setAdListener(new AdListener() {
+            public void onAdLoaded() {
+                if (interstitial.isLoaded()) {
+                    interstitial.show();
+                }
+            }
+        });
         ActionBar ab = getSupportActionBar();
         ab.hide();
         reiniciaPontuacao();
     }
 
 
+
     public void play(View view) {
         Intent intent = new Intent(this, MainActivity.class);
         startActivityForResult(intent, PERDER_JOGO);
+
     }
 
 
@@ -57,6 +77,17 @@ public class MenuActivity extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == PERDER_JOGO) {
+            interstitial= new InterstitialAd(getApplicationContext());
+            interstitial.setAdUnitId(getString(R.string.admob_interstetial_ad));
+            AdRequest adRequest = new AdRequest.Builder().build();
+            interstitial.loadAd(adRequest);
+            interstitial.setAdListener(new AdListener() {
+                public void onAdLoaded() {
+                    if (interstitial.isLoaded()) {
+                        interstitial.show();
+                    }
+                }
+            });
             pontuacao = data.getIntExtra("pontuacao", -1);
         }
     }

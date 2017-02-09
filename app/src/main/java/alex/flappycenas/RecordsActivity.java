@@ -9,6 +9,10 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.ads.AdListener;
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.InterstitialAd;
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
@@ -23,6 +27,8 @@ public class RecordsActivity extends AppCompatActivity {
     private TextView recordes;
     private String jogador;
     private String pontuacao;
+    private InterstitialAd interstitial;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -30,8 +36,20 @@ public class RecordsActivity extends AppCompatActivity {
         recordes = (TextView) findViewById(R.id.textViewPontuacao);
         guardaPontuacao(getIntent().getStringExtra("pontuacao"));
         lerRecordes();
+        interstitial = new InterstitialAd(RecordsActivity.this);
 
 
+        interstitial= new InterstitialAd(getApplicationContext());
+        interstitial.setAdUnitId(getString(R.string.admob_interstetial_ad));
+        AdRequest adRequest = new AdRequest.Builder().build();
+        interstitial.loadAd(adRequest);
+        interstitial.setAdListener(new AdListener() {
+            public void onAdLoaded() {
+                if (interstitial.isLoaded()) {
+                    interstitial.show();
+                }
+            }
+        });
 
     }
 
