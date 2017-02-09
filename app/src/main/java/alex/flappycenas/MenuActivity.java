@@ -2,20 +2,26 @@ package alex.flappycenas;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.preference.PreferenceManager;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Menu;
 import android.view.View;
 import android.widget.Toast;
 
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
 
 public class MenuActivity extends AppCompatActivity {
     public final static int PERDER_JOGO = 1;
-    public final static String FILENAME_SCORES = "scores";
+    public final static String FILENAME_SCORES = "scores.txt";
     private int pontuacao;
 
 
@@ -40,6 +46,9 @@ public class MenuActivity extends AppCompatActivity {
     }
 
     public void showRecords(View view) {
+        Intent intent = new Intent(this, RecordsActivity.class);
+        intent.putExtra("pontuacao", String.valueOf(pontuacao));
+        startActivity(intent);
 
 
     }
@@ -49,31 +58,12 @@ public class MenuActivity extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == PERDER_JOGO) {
             pontuacao = data.getIntExtra("pontuacao", -1);
-            if (pontuacao != -1) {
-                Toast.makeText(this, "A sua pontuacao foi asddf: " + String.valueOf(pontuacao), Toast.LENGTH_SHORT).show();
-            }
         }
     }
 
     public void reiniciaPontuacao() {
-        pontuacao=0;
+        pontuacao = 0;
     }
-
-    public void guardaPontuacao() {
-        String toSave = String.valueOf(pontuacao);
-        FileOutputStream fos = null;
-        try {
-            fos = openFileOutput(FILENAME_SCORES, Context.MODE_PRIVATE);
-            fos.write(toSave.getBytes());
-            fos.close();
-
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
 
 
 }
