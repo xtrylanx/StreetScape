@@ -13,6 +13,7 @@ import android.view.View;
 import android.widget.Toast;
 
 import java.io.BufferedReader;
+
 import com.google.android.gms.ads.AdListener;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.InterstitialAd;
@@ -32,7 +33,7 @@ public class MenuActivity extends AppCompatActivity {
     public final static int PERDER_JOGO = 1;
     public final static String FILENAME_SCORES_PATH = "/scores.txt";
     private int pontuacao;
-    public static Integer[] scores;
+    public static Integer[] scores = new Integer[3];
 
     private InterstitialAd interstitial;
 
@@ -42,7 +43,7 @@ public class MenuActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         interstitial = new InterstitialAd(MenuActivity.this);
         setContentView(R.layout.activity_menu);
-        interstitial= new InterstitialAd(getApplicationContext());
+        interstitial = new InterstitialAd(getApplicationContext());
         interstitial.setAdUnitId(getString(R.string.admob_interstetial_ad));
         AdRequest adRequest = new AdRequest.Builder().build();
         interstitial.loadAd(adRequest);
@@ -58,7 +59,12 @@ public class MenuActivity extends AppCompatActivity {
         inicializarArrayScores();
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        leScores();
 
+    }
 
     public void play(View view) {
         Intent intent = new Intent(this, MainActivity.class);
@@ -81,27 +87,23 @@ public class MenuActivity extends AppCompatActivity {
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (requestCode == PERDER_JOGO && resultCode == RESULT_OK) {
-            interstitial= new InterstitialAd(getApplicationContext());
-            interstitial.setAdUnitId(getString(R.string.admob_interstetial_ad));
-            AdRequest adRequest = new AdRequest.Builder().build();
-            interstitial.loadAd(adRequest);
-            interstitial.setAdListener(new AdListener() {
-                public void onAdLoaded() {
-                    if (interstitial.isLoaded()) {
-                        interstitial.show();
-                    }
+        pontuacao = data.getIntExtra("pontuacao", -1);
+        adicionaAListaScore(pontuacao);
+        guardaScores();
+        interstitial = new InterstitialAd(getApplicationContext());
+        interstitial.setAdUnitId(getString(R.string.admob_interstetial_ad));
+        AdRequest adRequest = new AdRequest.Builder().build();
+        interstitial.loadAd(adRequest);
+        interstitial.setAdListener(new AdListener() {
+            public void onAdLoaded() {
+                if (interstitial.isLoaded()) {
+                    interstitial.show();
                 }
-            });
-            pontuacao = data.getIntExtra("pontuacao", -1);
-            adicionaAListaScore(pontuacao);
-            guardaScores();
-        } else {
-
-        }
+            }
+        });
     }
 
-    private void adicionaAListaScore(int pontuacao) {
+    public static void adicionaAListaScore(int pontuacao) {
         if (scores[2] < pontuacao) {
             scores[2] = pontuacao;
         }
@@ -119,13 +121,11 @@ public class MenuActivity extends AppCompatActivity {
     }
 
     private void inicializarArrayScores() {
-        scores = new Integer[3];
+        pontuacao = 0;
         scores[0] = 0;
         scores[1] = 0;
         scores[2] = 0;
 
-        pontuacao = 0;
-        leScores();
     }
 
     private void guardaScores() {

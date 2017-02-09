@@ -1,5 +1,6 @@
 package alex.flappycenas;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -104,6 +105,12 @@ public class PainelJogo extends SurfaceView implements SurfaceHolder.Callback {
         while(retry) {
             try {
                 threadPrincipal.setActivo(false);
+                Intent intent = new Intent();
+                intent.putExtra("pontuacao", pontuacao);
+                ((MainActivity) getContext()).setResult(Activity.RESULT_OK, intent);
+                Log.d("pontuacaoafter", "no painel" + String.valueOf(pontuacao));
+                ((MainActivity) getContext()).finish();
+
             } catch (Exception e) {
                 e.printStackTrace();
             }
