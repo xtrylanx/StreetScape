@@ -3,6 +3,7 @@ package alex.flappycenas;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.widget.ListView;
@@ -24,7 +25,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class RecordsActivity extends AppCompatActivity {
-    private TextView recordes;
+    private TextView primeiro;
+    private TextView segundo;
+    private TextView terceiro;
     private String jogador;
     private String pontuacao;
 
@@ -34,11 +37,17 @@ public class RecordsActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_records);
-        recordes = (TextView) findViewById(R.id.textViewPontuacao);
-        for(int i: MenuActivity.scores) {
-            recordes.append(String.valueOf(i));
-        }
+        primeiro = (TextView) findViewById(R.id.textViewPrimeiro);
+        segundo = (TextView) findViewById(R.id.textViewSegundo);
+        terceiro = (TextView) findViewById(R.id.textViewTerceiro);
+        Integer[] scores = MenuActivity.scores;
+        primeiro.setText("Primeiro Lugar :" + String.valueOf(scores[0]));
+        segundo.setText("Segundo Lugar :" + String.valueOf(scores[1]));
+        terceiro.setText("Terceiro Lugar :" + String.valueOf(scores[2]));
         interstitial = new InterstitialAd(RecordsActivity.this);
+
+        ActionBar ab = getSupportActionBar();
+        ab.hide();
 
 
         interstitial= new InterstitialAd(getApplicationContext());

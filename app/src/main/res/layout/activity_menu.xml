@@ -40,11 +40,11 @@
             android:id="@+id/btnPlay"
             android:onClick="play"
 
-            android:textStyle="bold"
-            android:background="@android:color/transparent"
-            android:textSize="30sp"
-
             android:textColor="@android:color/background_light"
+            android:textStyle="bold"
+            android:textSize="30sp"
+            android:background="@android:color/transparent"
+
             android:layout_above="@+id/btnRecords"
             android:layout_alignLeft="@+id/btnRecords"
             android:layout_alignStart="@+id/btnRecords" />
